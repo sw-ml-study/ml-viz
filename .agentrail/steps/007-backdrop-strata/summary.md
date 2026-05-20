@@ -1,0 +1,1 @@
+Stratified the cone backdrop into three depth bands: tall dark mountains at the horizon (y=22), clay-brown mid-hills (y=18), small green trees up front (y=14). Regenerated minimal_scene.glb.

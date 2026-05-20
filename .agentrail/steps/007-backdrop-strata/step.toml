@@ -1,0 +1,9 @@
+number = 7
+slug = "backdrop-strata"
+status = "completed"
+description = "Goal: stratify the cone backdrop into three visual bands so the silhouette re..."
+role = "production"
+context_files = []
+created_at = "2026-05-20T16:40:42"
+completed_at = "2026-05-20T16:42:12"
+commits = ["99a51a13e73c8f908954b84b65a8766ea33e43f9"]

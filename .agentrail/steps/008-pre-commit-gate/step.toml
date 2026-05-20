@@ -1,4 +1,4 @@
-number = 7
+number = 8
 slug = "pre-commit-gate"
 status = "pending"
 description = "Goal: docs/process.md mandates a multi-step pre-commit gate (cargo test, clip..."
