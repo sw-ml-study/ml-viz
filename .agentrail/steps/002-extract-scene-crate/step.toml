@@ -1,8 +1,9 @@
 number = 2
 slug = "extract-scene-crate"
-status = "pending"
+status = "completed"
 description = "Goal: eliminate the duplicate Scene model. Right now `src/main.rs` and `yew-a..."
 role = "production"
 context_files = []
 created_at = "2026-05-20T14:03:49"
-commits = []
+completed_at = "2026-05-20T14:43:38"
+commits = ["9b55f2886a9266c3784b29916090a31095fd0f95"]

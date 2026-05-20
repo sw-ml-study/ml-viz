@@ -1,0 +1,1 @@
+Extracted shared ml_viz_scene crate. CLI binary and Yew cdylib now both depend on it; Scene gained #[serde(default)] callouts; gen-three serializes all callouts to scene.json. Validated via cargo build/clippy/fmt and wasm-pack.
