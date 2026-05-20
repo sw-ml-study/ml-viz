@@ -1,114 +1,6 @@
-use serde::{Deserialize, Serialize};
+use ml_viz_scene::{Anchor, Callout, ObjectSpec, Scene, resolve_anchor};
 use wasm_bindgen::prelude::*;
 use yew::prelude::*;
-
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-struct SceneMeta {
-    title: String,
-    environment: String,
-    frames: u32,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-struct ObjectSpec {
-    #[serde(rename = "type")]
-    kind: String,
-    name: String,
-    label: String,
-    position: [f32; 3],
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-#[serde(untagged)]
-enum Anchor {
-    Object { object: String },
-    World { world: [f32; 3] },
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-#[serde(tag = "kind", rename_all = "snake_case")]
-enum Callout {
-    Tooltip {
-        anchor: Anchor,
-        #[serde(default)]
-        offset: [f32; 3],
-        #[serde(default)]
-        title: Option<String>,
-        text: String,
-    },
-    Link {
-        anchor: Anchor,
-        #[serde(default)]
-        offset: [f32; 3],
-        text: String,
-        url: String,
-    },
-    SvgBillboard {
-        anchor: Anchor,
-        #[serde(default)]
-        offset: [f32; 3],
-        svg: String,
-        #[serde(default = "default_billboard_width")]
-        width: u32,
-    },
-    HtmlPanel {
-        anchor: Anchor,
-        #[serde(default)]
-        offset: [f32; 3],
-        #[serde(default)]
-        title: Option<String>,
-        html: String,
-    },
-}
-
-fn default_billboard_width() -> u32 {
-    260
-}
-
-impl Callout {
-    fn anchor(&self) -> &Anchor {
-        match self {
-            Callout::Tooltip { anchor, .. }
-            | Callout::Link { anchor, .. }
-            | Callout::SvgBillboard { anchor, .. }
-            | Callout::HtmlPanel { anchor, .. } => anchor,
-        }
-    }
-    fn offset(&self) -> [f32; 3] {
-        match self {
-            Callout::Tooltip { offset, .. }
-            | Callout::Link { offset, .. }
-            | Callout::SvgBillboard { offset, .. }
-            | Callout::HtmlPanel { offset, .. } => *offset,
-        }
-    }
-    fn kind_str(&self) -> &'static str {
-        match self {
-            Callout::Tooltip { .. } => "tooltip",
-            Callout::Link { .. } => "link",
-            Callout::SvgBillboard { .. } => "svg_billboard",
-            Callout::HtmlPanel { .. } => "html_panel",
-        }
-    }
-}
-
-fn resolve_anchor(anchor: &Anchor, objects: &[ObjectSpec]) -> Option<[f32; 3]> {
-    match anchor {
-        Anchor::Object { object } => objects
-            .iter()
-            .find(|o| &o.name == object)
-            .map(|o| o.position),
-        Anchor::World { world } => Some(*world),
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
-struct Scene {
-    scene: SceneMeta,
-    objects: Vec<ObjectSpec>,
-    #[serde(default)]
-    callouts: Vec<Callout>,
-}
 
 #[wasm_bindgen]
 extern "C" {
@@ -163,11 +55,11 @@ fn app() -> Html {
         .as_ref()
         .map(|s| s.scene.title.clone())
         .unwrap_or_else(|| "Loading scene…".into());
-    let objects = scene
+    let objects: Vec<ObjectSpec> = scene
         .as_ref()
         .map(|s| s.objects.clone())
         .unwrap_or_default();
-    let callouts = scene
+    let callouts: Vec<Callout> = scene
         .as_ref()
         .map(|s| s.callouts.clone())
         .unwrap_or_default();
@@ -188,14 +80,16 @@ fn app() -> Html {
                 <ul class="objects">
                 {
                     for objects.into_iter().map(|o| {
-                        let [x, y, z] = o.position;
-                        let name = o.name.clone();
+                        let [x, y, z] = o.position();
+                        let name = o.name().to_string();
                         let onclick = Callback::from(move |_| focus_object(&name, x, y, z));
+                        let kind = o.kind().to_string();
+                        let label = o.label().to_string();
                         html! {
                             <li>
                                 <button {onclick}>
-                                    <span class="kind">{ o.kind.clone() }</span>
-                                    <span class="label">{ o.label.clone() }</span>
+                                    <span class="kind">{ kind }</span>
+                                    <span class="label">{ label }</span>
                                 </button>
                             </li>
                         }
@@ -265,7 +159,7 @@ fn build_callout_payload(scene: &Scene) -> String {
     let scene_objects: Vec<_> = scene
         .objects
         .iter()
-        .map(|o| serde_json::json!({ "name": o.name, "position": o.position }))
+        .map(|o| serde_json::json!({ "name": o.name(), "position": o.position() }))
         .collect();
     serde_json::to_string(&serde_json::json!({
         "callouts": entries,

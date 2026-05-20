@@ -1,6 +1,6 @@
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
-use serde::{Deserialize, Serialize};
+use ml_viz_scene::Scene;
 use std::{
     fs,
     path::{Path, PathBuf},
@@ -39,51 +39,6 @@ enum Commands {
     },
     Validate {
         scene: PathBuf,
-    },
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct Scene {
-    scene: SceneMeta,
-    objects: Vec<ObjectSpec>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-struct SceneMeta {
-    title: String,
-    environment: String,
-    frames: u32,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(tag = "type")]
-enum ObjectSpec {
-    #[serde(rename = "layer_stack")]
-    LayerStack {
-        name: String,
-        label: String,
-        position: [f32; 3],
-        layers: u32,
-        svg: Option<String>,
-    },
-    #[serde(rename = "network_graph")]
-    NetworkGraph {
-        name: String,
-        label: String,
-        position: [f32; 3],
-        nodes: u32,
-    },
-    #[serde(rename = "ml_cube")]
-    MlCube {
-        name: String,
-        label: String,
-        position: [f32; 3],
-    },
-    #[serde(rename = "rag_pipeline")]
-    RagPipeline {
-        name: String,
-        label: String,
-        position: [f32; 3],
     },
 }
 
@@ -131,22 +86,7 @@ fn gen_svg(title: &str, out: &Path) -> Result<()> {
 
 fn validate(scene_path: &Path) -> Result<()> {
     let scene = read_scene(scene_path)?;
-    anyhow::ensure!(!scene.objects.is_empty(), "scene has no objects");
-    for obj in &scene.objects {
-        match obj {
-            ObjectSpec::LayerStack { layers, label, .. } => {
-                anyhow::ensure!(*layers > 0, "layer stack has zero layers");
-                anyhow::ensure!(!label.trim().is_empty(), "empty label");
-            }
-            ObjectSpec::NetworkGraph { nodes, label, .. } => {
-                anyhow::ensure!(*nodes > 1, "network graph needs at least two nodes");
-                anyhow::ensure!(!label.trim().is_empty(), "empty label");
-            }
-            ObjectSpec::MlCube { label, .. } | ObjectSpec::RagPipeline { label, .. } => {
-                anyhow::ensure!(!label.trim().is_empty(), "empty label")
-            }
-        }
-    }
+    scene.validate()?;
     println!("OK: {} objects", scene.objects.len());
     Ok(())
 }

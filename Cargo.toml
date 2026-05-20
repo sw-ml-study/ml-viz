@@ -6,9 +6,10 @@ license = "MIT"
 authors = ["Michael A. Wright"]
 
 [workspace]
-members = ["yew-app"]
+members = ["yew-app", "scene"]
 
 [dependencies]
+ml_viz_scene = { path = "scene" }
 anyhow = "1"
 clap = { version = "4", features = ["derive"] }
 serde = { version = "1", features = ["derive"] }

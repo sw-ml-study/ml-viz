@@ -1015,6 +1015,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
+ "ml_viz_scene",
  "serde",
  "serde_json",
  "serde_yaml",
@@ -1024,10 +1025,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "ml_viz_scene"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "ml_viz_yew"
 version = "0.1.0"
 dependencies = [
  "gloo-net 0.5.0",
+ "ml_viz_scene",
  "serde",
  "serde_json",
  "wasm-bindgen",

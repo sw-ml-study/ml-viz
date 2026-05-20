@@ -10,6 +10,7 @@ authors = ["Michael A. Wright"]
 crate-type = ["cdylib"]
 
 [dependencies]
+ml_viz_scene = { path = "../scene" }
 yew = { version = "0.21", features = ["csr"] }
 wasm-bindgen = "0.2"
 wasm-bindgen-futures = "0.4"
