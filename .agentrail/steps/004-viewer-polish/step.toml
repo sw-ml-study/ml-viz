@@ -1,0 +1,8 @@
+number = 4
+slug = "viewer-polish"
+status = "in-progress"
+description = "Goal: tighten the Yew viewer's default camera, scene layout, callout sizing, ..."
+role = "production"
+context_files = []
+created_at = "2026-05-20T15:08:22"
+commits = []

@@ -42,17 +42,25 @@ browns = [
     mat('mountain-sand',   (0.80, 0.66, 0.46, 1), roughness=0.86),
 ]
 
-# Ground
-bpy.ops.mesh.primitive_plane_add(size=22, location=(0,0,-0.02)); bpy.context.object.data.materials.append(sand)
+# Ground: rectangular plane that ends at the mountain line so no visible
+# ground extends beyond the horizon. Centered between the camera (Blender
+# y ~ -10) and the mountain row (y ~ 22), so it extends about 5 units in
+# front of the camera and ends right at the mountain bases.
+bpy.ops.mesh.primitive_plane_add(size=1, location=(0, 5, -0.02))
+ground = bpy.context.object
+ground.scale = (100, 35, 1)
+bpy.ops.object.transform_apply(scale=True)
+ground.name = 'ground_plane'
+ground.data.materials.append(sand)
 
-# Stylized mountain backdrop. Each peak picks a brown from the palette;
-# taller peaks bias toward darker, denser rock; lighter foothills land in front.
-for i in range(16):
-    x=-10+i*1.35; h=random.uniform(1.0,3.2); y=7.5+random.uniform(-.35,.35)
-    bpy.ops.mesh.primitive_cone_add(vertices=3, radius1=random.uniform(.9,1.7), depth=h, location=(x,y,h/2-0.02), rotation=(0,0,random.uniform(-.2,.2)))
+# Stylized mountain backdrop. Pushed back to the far edge of the ground
+# plane so the cones sit on the horizon and no plane shows behind them.
+for i in range(44):
+    x=-32+i*1.5; h=random.uniform(1.0,3.4); y=21.5+random.uniform(-.4,.4)
+    bpy.ops.mesh.primitive_cone_add(vertices=3, radius1=random.uniform(.9,1.8), depth=h, location=(x,y,h/2-0.02), rotation=(0,0,random.uniform(-.2,.2)))
     obj=bpy.context.object; obj.name='distant_mountain'
-    # Map height range (1.0-3.2) to palette index; jitter so the line isn't a stripe.
-    tier = min(len(browns)-1, max(0, int((h - 1.0) / (3.2 - 1.0) * len(browns) + random.uniform(-0.6, 0.6))))
+    # Map height range (1.0-3.4) to palette index; jitter so the line isn't a stripe.
+    tier = min(len(browns)-1, max(0, int((h - 1.0) / (3.4 - 1.0) * len(browns) + random.uniform(-0.6, 0.6))))
     obj.data.materials.append(browns[tier])
 
 # Helpers

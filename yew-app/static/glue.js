@@ -2,6 +2,11 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
+// Default framing for the row of demo objects — referenced by both initThree
+// and homeView so the Home button restores exactly the startup view.
+const HOME_POSITION = [0, 2, 10];
+const HOME_TARGET = [0, 0.6, 0];
+
 let camera = null;
 let controls = null;
 let gltfRoot = null;
@@ -37,11 +42,11 @@ window.initThree = async function (canvasId, glbUrl) {
   scene.background = new THREE.Color(0xeef3f6);
 
   camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 200);
-  camera.position.set(8, 6, 8);
+  camera.position.set(...HOME_POSITION);
   camera.up.set(0, 1, 0);
 
   controls = new OrbitControls(camera, canvas);
-  controls.target.set(0, 0.6, 0);
+  controls.target.set(...HOME_TARGET);
   controls.enableDamping = true;
   controls.dampingFactor = 0.08;
   controls.enablePan = true;
@@ -90,6 +95,13 @@ window.focusObject = function (_name, bx, by, bz) {
   const target = fromBlender(bx, by, bz);
   controls.target.copy(target);
   camera.position.set(target.x + 4, target.y + 3, target.z + 6);
+  controls.update();
+};
+
+window.homeView = function () {
+  if (!camera || !controls) return;
+  camera.position.set(...HOME_POSITION);
+  controls.target.set(...HOME_TARGET);
   controls.update();
 };
 

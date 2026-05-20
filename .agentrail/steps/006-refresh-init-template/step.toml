@@ -1,4 +1,4 @@
-number = 5
+number = 6
 slug = "refresh-init-template"
 status = "pending"
 description = "Goal: `cargo run -- init-scene <path>` currently writes `templates/minimal_sc..."

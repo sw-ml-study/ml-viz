@@ -17,22 +17,46 @@ canvas#viz {
 
 #hud {
   position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 1;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 4;
+  width: 240px;
   background: rgba(255, 255, 255, 0.94);
-  padding: 18px 22px 14px;
-  border-radius: 16px;
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.16);
-  max-width: 340px;
+  padding: 18px 18px 14px;
+  border-radius: 0 16px 16px 0;
+  box-shadow: 6px 0 24px rgba(0, 0, 0, 0.14);
   backdrop-filter: blur(6px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
 }
 
 #hud h1 {
-  margin: 0 0 6px;
-  font-size: 20px;
+  margin: 0 0 10px;
+  font-size: 18px;
   color: #1c5264;
   letter-spacing: -0.01em;
+}
+
+.home-btn {
+  align-self: flex-start;
+  margin: 0 0 12px;
+  padding: 6px 12px;
+  border: 1px solid #1c5264;
+  border-radius: 999px;
+  background: #1c5264;
+  color: #f6fbff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.home-btn:hover {
+  background: #2a7a93;
 }
 
 #hud .hint {
@@ -163,10 +187,11 @@ canvas#viz {
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid #c8dde6;
   border-radius: 12px;
-  padding: 12px 16px;
-  max-width: 320px;
+  padding: 8px 12px;
+  max-width: 220px;
   box-shadow: 0 10px 26px rgba(0, 0, 0, 0.16);
   color: #1c5264;
+  font-size: 12px;
 }
 
 .callout-panel h3 {

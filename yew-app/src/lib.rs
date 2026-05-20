@@ -10,6 +10,8 @@ extern "C" {
     fn focus_object(name: &str, x: f32, y: f32, z: f32);
     #[wasm_bindgen(js_namespace = window, js_name = initCallouts)]
     fn init_callouts(json: &str);
+    #[wasm_bindgen(js_namespace = window, js_name = homeView)]
+    fn home_view();
 }
 
 #[function_component(App)]
@@ -76,6 +78,7 @@ fn app() -> Html {
             </div>
             <aside id="hud">
                 <h1>{ title }</h1>
+                <button class="home-btn" onclick={Callback::from(|_| home_view())}>{ "Home view" }</button>
                 <p class="hint">{ "Left-drag to orbit · right-drag or arrow keys to pan · scroll to zoom · hover an object for its tooltip · click below to focus" }</p>
                 <ul class="objects">
                 {
