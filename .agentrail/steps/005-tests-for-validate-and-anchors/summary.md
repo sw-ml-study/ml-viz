@@ -1,0 +1,1 @@
+Added 10 unit tests in ml_viz_scene covering Scene::validate (accept minimal.yaml; reject empty objects, zero layers, single-node graph, empty + whitespace labels), resolve_anchor (object match / no-match / world), and a serde YAML round-trip on the bundled scene.
