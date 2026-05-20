@@ -1,0 +1,1 @@
+Synced templates/minimal_scene.yaml to scenes/minimal.yaml (single-row layout, polished callouts) and added scene::tests::init_template_parses_and_validates to lock the template against the live schema. End-to-end init-scene + validate round-trip confirmed.
