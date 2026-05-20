@@ -1,7 +1,9 @@
 [package]
-name = "blender_ml_viz"
+name = "ml_viz"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
+license = "MIT"
+authors = ["Michael A. Wright"]
 
 [workspace]
 members = ["yew-app"]

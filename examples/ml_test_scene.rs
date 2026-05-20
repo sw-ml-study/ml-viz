@@ -28,24 +28,25 @@ fn main() {
 
     build_wasm(&yew_app);
 
-    let scene_json = load_scene_json(&scenes.join("minimal.yaml"))
-        .unwrap_or_else(|e| {
-            eprintln!("warn: could not load scenes/minimal.yaml — {e}");
-            eprintln!("      run `cargo run -- init-scene scenes/minimal.yaml` first");
-            "{}".into()
-        });
+    let scene_json = load_scene_json(&scenes.join("minimal.yaml")).unwrap_or_else(|e| {
+        eprintln!("warn: could not load scenes/minimal.yaml — {e}");
+        eprintln!("      run `cargo run -- init-scene scenes/minimal.yaml` first");
+        "{}".into()
+    });
 
     let glb_path = generated.join("minimal_scene.glb");
     if !glb_path.is_file() {
         eprintln!("warn: {} not found — run", glb_path.display());
-        eprintln!("      cargo run -- gen-blender scenes/minimal.yaml --out generated/minimal_scene.py");
+        eprintln!(
+            "      cargo run -- gen-blender scenes/minimal.yaml --out generated/minimal_scene.py"
+        );
         eprintln!("      blender -b --python generated/minimal_scene.py");
         eprintln!("      to generate it; the page will fall back to a placeholder cube.");
     }
 
     let server = Server::http(BIND).expect("bind 0.0.0.0:9521");
     println!();
-    println!("blender_ml_viz Yew/WASM demo");
+    println!("ml-viz Yew/WASM demo");
     println!("  http://localhost:9521    (this machine)");
     println!("  http://{}                (LAN)", lan_url(BIND));
     println!();
@@ -83,15 +84,13 @@ fn main() {
                 Err(e) => {
                     eprintln!("  500 {}: {e}", file.display());
                     let _ = req.respond(
-                        Response::from_string(format!("read error: {e}"))
-                            .with_status_code(500),
+                        Response::from_string(format!("read error: {e}")).with_status_code(500),
                     );
                 }
             },
             None => {
                 let _ = req.respond(
-                    Response::from_string(format!("not found: {logical}"))
-                        .with_status_code(404),
+                    Response::from_string(format!("not found: {logical}")).with_status_code(404),
                 );
             }
         }

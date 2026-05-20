@@ -1,8 +1,10 @@
 [package]
-name = "blender_ml_viz_yew"
+name = "ml_viz_yew"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 publish = false
+license = "MIT"
+authors = ["Michael A. Wright"]
 
 [lib]
 crate-type = ["cdylib"]

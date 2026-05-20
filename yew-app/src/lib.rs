@@ -94,7 +94,10 @@ impl Callout {
 
 fn resolve_anchor(anchor: &Anchor, objects: &[ObjectSpec]) -> Option<[f32; 3]> {
     match anchor {
-        Anchor::Object { object } => objects.iter().find(|o| &o.name == object).map(|o| o.position),
+        Anchor::Object { object } => objects
+            .iter()
+            .find(|o| &o.name == object)
+            .map(|o| o.position),
         Anchor::World { world } => Some(*world),
     }
 }
@@ -160,8 +163,14 @@ fn app() -> Html {
         .as_ref()
         .map(|s| s.scene.title.clone())
         .unwrap_or_else(|| "Loading scene…".into());
-    let objects = scene.as_ref().map(|s| s.objects.clone()).unwrap_or_default();
-    let callouts = scene.as_ref().map(|s| s.callouts.clone()).unwrap_or_default();
+    let objects = scene
+        .as_ref()
+        .map(|s| s.objects.clone())
+        .unwrap_or_default();
+    let callouts = scene
+        .as_ref()
+        .map(|s| s.callouts.clone())
+        .unwrap_or_default();
 
     html! {
         <>

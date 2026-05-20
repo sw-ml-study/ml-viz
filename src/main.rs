@@ -1,11 +1,14 @@
 use anyhow::{Context, Result};
 use clap::{Parser, Subcommand};
 use serde::{Deserialize, Serialize};
-use std::{fs, path::{Path, PathBuf}};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+};
 use tera::{Context as TeraContext, Tera};
 
 #[derive(Parser)]
-#[command(name = "blender-ml-viz")]
+#[command(name = "ml-viz")]
 #[command(about = "Generate Blender batch scripts and three.js/Yew examples from ML scene specs")]
 struct Cli {
     #[command(subcommand)]
@@ -14,11 +17,29 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    InitScene { #[arg(default_value = "scenes/minimal.yaml")] out: PathBuf },
-    GenBlender { scene: PathBuf, #[arg(short, long, default_value = "generated/minimal_scene.py")] out: PathBuf },
-    GenThree { scene: PathBuf, #[arg(short, long, default_value = "web-example")] out_dir: PathBuf },
-    GenSvg { #[arg(short, long, default_value = "Encoder Stack")] title: String, #[arg(short, long, default_value = "assets/svg/callout_encoder.svg")] out: PathBuf },
-    Validate { scene: PathBuf },
+    InitScene {
+        #[arg(default_value = "scenes/minimal.yaml")]
+        out: PathBuf,
+    },
+    GenBlender {
+        scene: PathBuf,
+        #[arg(short, long, default_value = "generated/minimal_scene.py")]
+        out: PathBuf,
+    },
+    GenThree {
+        scene: PathBuf,
+        #[arg(short, long, default_value = "web-example")]
+        out_dir: PathBuf,
+    },
+    GenSvg {
+        #[arg(short, long, default_value = "Encoder Stack")]
+        title: String,
+        #[arg(short, long, default_value = "assets/svg/callout_encoder.svg")]
+        out: PathBuf,
+    },
+    Validate {
+        scene: PathBuf,
+    },
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -38,13 +59,32 @@ struct SceneMeta {
 #[serde(tag = "type")]
 enum ObjectSpec {
     #[serde(rename = "layer_stack")]
-    LayerStack { name: String, label: String, position: [f32; 3], layers: u32, svg: Option<String> },
+    LayerStack {
+        name: String,
+        label: String,
+        position: [f32; 3],
+        layers: u32,
+        svg: Option<String>,
+    },
     #[serde(rename = "network_graph")]
-    NetworkGraph { name: String, label: String, position: [f32; 3], nodes: u32 },
+    NetworkGraph {
+        name: String,
+        label: String,
+        position: [f32; 3],
+        nodes: u32,
+    },
     #[serde(rename = "ml_cube")]
-    MlCube { name: String, label: String, position: [f32; 3] },
+    MlCube {
+        name: String,
+        label: String,
+        position: [f32; 3],
+    },
     #[serde(rename = "rag_pipeline")]
-    RagPipeline { name: String, label: String, position: [f32; 3] },
+    RagPipeline {
+        name: String,
+        label: String,
+        position: [f32; 3],
+    },
 }
 
 fn main() -> Result<()> {
@@ -65,7 +105,8 @@ fn init_scene(out: &Path) -> Result<()> {
 }
 
 fn gen_svg(title: &str, out: &Path) -> Result<()> {
-    let body = format!(r##"<svg xmlns="http://www.w3.org/2000/svg" width="900" height="420" viewBox="0 0 900 420">
+    let body = format!(
+        r##"<svg xmlns="http://www.w3.org/2000/svg" width="900" height="420" viewBox="0 0 900 420">
   <defs>
     <filter id="shadow"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-opacity="0.25"/></filter>
   </defs>
@@ -82,7 +123,9 @@ fn gen_svg(title: &str, out: &Path) -> Result<()> {
     <text x="418" y="30" font-family="Inter, Arial" font-size="22">logits</text>
   </g>
   <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#555"/></marker></defs>
-</svg>"##, xml_escape(title));
+</svg>"##,
+        xml_escape(title)
+    );
     write_file(out, &body)
 }
 
@@ -91,9 +134,17 @@ fn validate(scene_path: &Path) -> Result<()> {
     anyhow::ensure!(!scene.objects.is_empty(), "scene has no objects");
     for obj in &scene.objects {
         match obj {
-            ObjectSpec::LayerStack { layers, label, .. } => { anyhow::ensure!(*layers > 0, "layer stack has zero layers"); anyhow::ensure!(!label.trim().is_empty(), "empty label"); }
-            ObjectSpec::NetworkGraph { nodes, label, .. } => { anyhow::ensure!(*nodes > 1, "network graph needs at least two nodes"); anyhow::ensure!(!label.trim().is_empty(), "empty label"); }
-            ObjectSpec::MlCube { label, .. } | ObjectSpec::RagPipeline { label, .. } => anyhow::ensure!(!label.trim().is_empty(), "empty label"),
+            ObjectSpec::LayerStack { layers, label, .. } => {
+                anyhow::ensure!(*layers > 0, "layer stack has zero layers");
+                anyhow::ensure!(!label.trim().is_empty(), "empty label");
+            }
+            ObjectSpec::NetworkGraph { nodes, label, .. } => {
+                anyhow::ensure!(*nodes > 1, "network graph needs at least two nodes");
+                anyhow::ensure!(!label.trim().is_empty(), "empty label");
+            }
+            ObjectSpec::MlCube { label, .. } | ObjectSpec::RagPipeline { label, .. } => {
+                anyhow::ensure!(!label.trim().is_empty(), "empty label")
+            }
         }
     }
     println!("OK: {} objects", scene.objects.len());
@@ -103,7 +154,10 @@ fn validate(scene_path: &Path) -> Result<()> {
 fn gen_blender(scene_path: &Path, out: &Path) -> Result<()> {
     let scene = read_scene(scene_path)?;
     let mut tera = Tera::default();
-    tera.add_raw_template("blender.py", include_str!("../templates/blender/scene.py.tera"))?;
+    tera.add_raw_template(
+        "blender.py",
+        include_str!("../templates/blender/scene.py.tera"),
+    )?;
     let mut ctx = TeraContext::new();
     ctx.insert("scene", &scene);
     let rendered = tera.render("blender.py", &ctx)?;
@@ -116,22 +170,39 @@ fn gen_three(scene_path: &Path, out_dir: &Path) -> Result<()> {
     fs::create_dir_all(out_dir.join("public/assets/svg"))?;
     let scene_json = serde_json::to_string_pretty(&scene)?;
     write_file(&out_dir.join("public/scene.json"), &scene_json)?;
-    write_file(&out_dir.join("package.json"), include_str!("../templates/threejs/package.json"))?;
-    write_file(&out_dir.join("index.html"), include_str!("../templates/threejs/index.html"))?;
-    write_file(&out_dir.join("src/main.ts"), include_str!("../templates/threejs/main.ts"))?;
-    copy_glb_if_present(Path::new("generated/minimal_scene.glb"), &out_dir.join("public/minimal_scene.glb"));
+    write_file(
+        &out_dir.join("package.json"),
+        include_str!("../templates/threejs/package.json"),
+    )?;
+    write_file(
+        &out_dir.join("index.html"),
+        include_str!("../templates/threejs/index.html"),
+    )?;
+    write_file(
+        &out_dir.join("src/main.ts"),
+        include_str!("../templates/threejs/main.ts"),
+    )?;
+    copy_glb_if_present(
+        Path::new("generated/minimal_scene.glb"),
+        &out_dir.join("public/minimal_scene.glb"),
+    );
     Ok(())
 }
 
 fn copy_glb_if_present(src: &Path, dst: &Path) {
     if src.exists() {
-        if let Some(parent) = dst.parent() { let _ = fs::create_dir_all(parent); }
+        if let Some(parent) = dst.parent() {
+            let _ = fs::create_dir_all(parent);
+        }
         match fs::copy(src, dst) {
             Ok(_) => println!("copied {} -> {}", src.display(), dst.display()),
             Err(e) => eprintln!("warn: failed to copy {}: {}", src.display(), e),
         }
     } else {
-        eprintln!("note: {} not found yet — run `blender -b --python generated/minimal_scene.py` then re-run this command", src.display());
+        eprintln!(
+            "note: {} not found yet — run `blender -b --python generated/minimal_scene.py` then re-run this command",
+            src.display()
+        );
     }
 }
 
@@ -141,10 +212,15 @@ fn read_scene(path: &Path) -> Result<Scene> {
 }
 
 fn write_file(path: &Path, body: &str) -> Result<()> {
-    if let Some(parent) = path.parent() { fs::create_dir_all(parent)?; }
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent)?;
+    }
     fs::write(path, body).with_context(|| format!("writing {}", path.display()))
 }
 
 fn xml_escape(s: &str) -> String {
-    s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;").replace('"', "&quot;")
+    s.replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
 }
