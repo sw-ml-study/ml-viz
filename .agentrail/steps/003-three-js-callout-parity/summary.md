@@ -1,0 +1,1 @@
+Retired the legacy three.js/Vite scaffold. Yew is the sole viewer. Dropped GenThree subcommand + templates/threejs/ + web-example, scrubbed README/docs/phases.md/scripts/demo.sh accordingly. Reordered saga: three-js-callout-parity moved from step 5 to step 3 since it was done early.

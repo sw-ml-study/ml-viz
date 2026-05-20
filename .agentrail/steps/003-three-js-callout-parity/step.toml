@@ -1,8 +1,9 @@
 number = 3
 slug = "three-js-callout-parity"
-status = "in-progress"
+status = "completed"
 description = "Goal: bring the three.js scaffold to parity with the Yew viewer, OR explicitl..."
 role = "production"
 context_files = []
 created_at = "2026-05-20T14:04:23"
-commits = []
+completed_at = "2026-05-20T14:50:39"
+commits = ["08ef9f8fb7c6ad9ef67809dc9be48beb7a46c607"]
