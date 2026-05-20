@@ -6,23 +6,23 @@ objects:
   - type: "layer_stack"
     name: "encoder_stack"
     label: "Encoder stack"
-    position: [-4.5, 0.0, 0.0]
+    position: [-6.0, 0.0, 0.0]
     layers: 5
     svg: "assets/svg/callout_encoder.svg"
   - type: "network_graph"
     name: "attention_graph"
     label: "Attention heads"
-    position: [-4.5, 2.2, 1.1]
+    position: [-2.0, 0.0, 0.0]
     nodes: 16
   - type: "ml_cube"
     name: "decoder_cube"
     label: "Decoder"
-    position: [0.0, -1.5, 0.6]
+    position: [2.0, 0.0, 0.0]
   - type: "rag_pipeline"
     name: "rag_module"
     label: "RAG retrieval island"
-    position: [4.0, 0.5, 0.0]
-# Interactive-only callouts read by the three.js/Yew client.
+    position: [6.0, 0.0, 0.0]
+# Interactive-only callouts read by the Yew/WASM client.
 # Anchors are either { object: "<name>" } resolved to that object's position,
 # or { world: [x, y, z] } in Blender Z-up. `offset` is added to the anchor.
 callouts:
@@ -44,16 +44,16 @@ callouts:
     text: "Top-k document retrieval feeding into the decoder context."
   - kind: link
     anchor: { object: "decoder_cube" }
-    offset: [0.0, 0.0, 1.4]
+    offset: [0.0, 0.0, 0.9]
     text: "Decoder paper"
     url: "https://arxiv.org/abs/1706.03762"
   - kind: svg_billboard
     anchor: { object: "encoder_stack" }
-    offset: [0.0, -1.8, 2.4]
+    offset: [0.0, -0.6, 1.6]
     svg: "/assets/svg/callout_encoder.svg"
-    width: 280
+    width: 140
   - kind: html_panel
     anchor: { object: "rag_module" }
-    offset: [0.0, 0.0, 2.2]
+    offset: [0.0, 0.0, 1.4]
     title: "RAG pipeline"
     html: "<p>Documents are embedded and indexed offline.</p><p>At inference, the top-<b>k</b> matches are concatenated into the decoder prompt.</p>"

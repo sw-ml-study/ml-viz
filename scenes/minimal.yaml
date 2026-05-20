@@ -22,7 +22,7 @@ objects:
     name: "rag_module"
     label: "RAG retrieval island"
     position: [6.0, 0.0, 0.0]
-# Interactive-only callouts read by the three.js/Yew client.
+# Interactive-only callouts read by the Yew/WASM client.
 # Anchors are either { object: "<name>" } resolved to that object's position,
 # or { world: [x, y, z] } in Blender Z-up. `offset` is added to the anchor.
 callouts:

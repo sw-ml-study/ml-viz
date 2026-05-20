@@ -206,6 +206,7 @@ mod tests {
     use super::*;
 
     const MINIMAL_YAML: &str = include_str!("../../scenes/minimal.yaml");
+    const INIT_TEMPLATE_YAML: &str = include_str!("../../templates/minimal_scene.yaml");
 
     fn meta() -> SceneMeta {
         SceneMeta {
@@ -321,6 +322,14 @@ mod tests {
             &[],
         );
         assert_eq!(got, Some([1.0, 2.0, 3.0]));
+    }
+
+    #[test]
+    fn init_template_parses_and_validates() {
+        let s: Scene =
+            serde_yaml::from_str(INIT_TEMPLATE_YAML).expect("parse templates/minimal_scene.yaml");
+        s.validate()
+            .expect("init template must satisfy the live schema");
     }
 
     #[test]
