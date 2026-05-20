@@ -1,0 +1,8 @@
+number = 3
+slug = "tests-for-validate-and-anchors"
+status = "pending"
+description = "Goal: TDD coverage for the pure logic that's currently untested. process.md m..."
+role = "production"
+context_files = []
+created_at = "2026-05-20T14:03:49"
+commits = []

@@ -1,0 +1,8 @@
+number = 5
+slug = "three-js-callout-parity"
+status = "pending"
+description = "Goal: bring the three.js scaffold to parity with the Yew viewer, OR explicitl..."
+role = "production"
+context_files = []
+created_at = "2026-05-20T14:04:23"
+commits = []

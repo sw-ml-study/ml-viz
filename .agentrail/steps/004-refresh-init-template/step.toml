@@ -1,0 +1,8 @@
+number = 4
+slug = "refresh-init-template"
+status = "pending"
+description = "Goal: `cargo run -- init-scene <path>` currently writes `templates/minimal_sc..."
+role = "production"
+context_files = []
+created_at = "2026-05-20T14:04:23"
+commits = []

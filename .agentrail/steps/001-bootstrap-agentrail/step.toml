@@ -1,0 +1,8 @@
+number = 1
+slug = "bootstrap-agentrail"
+status = "in-progress"
+description = "Goal: record the agentrail saga itself in git so future sessions inherit a tr..."
+role = "production"
+context_files = []
+created_at = "2026-05-20T14:03:49"
+commits = []
