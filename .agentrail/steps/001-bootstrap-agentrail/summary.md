@@ -1,0 +1,1 @@
+Initialized agentrail saga and committed .agentrail/ + AGENTS.md so future sessions inherit the saga record.
