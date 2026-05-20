@@ -1,4 +1,4 @@
-number = 3
+number = 4
 slug = "tests-for-validate-and-anchors"
 status = "pending"
 description = "Goal: TDD coverage for the pure logic that's currently untested. process.md m..."

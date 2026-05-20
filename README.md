@@ -17,13 +17,6 @@ The Blender step writes `generated/minimal_scene.blend` (with SVG callout curves
 
 `cargo run --example ml-test-scene` builds the Yew/WASM crate under `yew-app/` with `wasm-pack` and serves the static HTML, CSS, JS glue, wasm bundle, scene spec, and the .glb on `http://0.0.0.0:9521` so the page is reachable from other devices on the LAN.
 
-Legacy three.js/TS scaffold (no Yew) is still available via:
-
-```bash
-cargo run -- gen-three scenes/minimal.yaml --out-dir web-example
-cd web-example && npm install && npm run dev
-```
-
 ## Agent-safe loop
 
 Agents should usually edit `scenes/*.yaml` and templates, then run the Rust CLI. They should avoid hand-editing generated Python except when developing reusable primitives.

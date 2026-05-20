@@ -9,7 +9,7 @@ use tera::{Context as TeraContext, Tera};
 
 #[derive(Parser)]
 #[command(name = "ml-viz")]
-#[command(about = "Generate Blender batch scripts and three.js/Yew examples from ML scene specs")]
+#[command(about = "Generate Blender batch scripts and assets for the Yew/WASM viewer")]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
@@ -25,11 +25,6 @@ enum Commands {
         scene: PathBuf,
         #[arg(short, long, default_value = "generated/minimal_scene.py")]
         out: PathBuf,
-    },
-    GenThree {
-        scene: PathBuf,
-        #[arg(short, long, default_value = "web-example")]
-        out_dir: PathBuf,
     },
     GenSvg {
         #[arg(short, long, default_value = "Encoder Stack")]
@@ -47,7 +42,6 @@ fn main() -> Result<()> {
     match cli.command {
         Commands::InitScene { out } => init_scene(&out),
         Commands::GenBlender { scene, out } => gen_blender(&scene, &out),
-        Commands::GenThree { scene, out_dir } => gen_three(&scene, &out_dir),
         Commands::GenSvg { title, out } => gen_svg(&title, &out),
         Commands::Validate { scene } => validate(&scene),
     }
@@ -102,48 +96,6 @@ fn gen_blender(scene_path: &Path, out: &Path) -> Result<()> {
     ctx.insert("scene", &scene);
     let rendered = tera.render("blender.py", &ctx)?;
     write_file(out, &rendered)
-}
-
-fn gen_three(scene_path: &Path, out_dir: &Path) -> Result<()> {
-    let scene = read_scene(scene_path)?;
-    fs::create_dir_all(out_dir.join("src"))?;
-    fs::create_dir_all(out_dir.join("public/assets/svg"))?;
-    let scene_json = serde_json::to_string_pretty(&scene)?;
-    write_file(&out_dir.join("public/scene.json"), &scene_json)?;
-    write_file(
-        &out_dir.join("package.json"),
-        include_str!("../templates/threejs/package.json"),
-    )?;
-    write_file(
-        &out_dir.join("index.html"),
-        include_str!("../templates/threejs/index.html"),
-    )?;
-    write_file(
-        &out_dir.join("src/main.ts"),
-        include_str!("../templates/threejs/main.ts"),
-    )?;
-    copy_glb_if_present(
-        Path::new("generated/minimal_scene.glb"),
-        &out_dir.join("public/minimal_scene.glb"),
-    );
-    Ok(())
-}
-
-fn copy_glb_if_present(src: &Path, dst: &Path) {
-    if src.exists() {
-        if let Some(parent) = dst.parent() {
-            let _ = fs::create_dir_all(parent);
-        }
-        match fs::copy(src, dst) {
-            Ok(_) => println!("copied {} -> {}", src.display(), dst.display()),
-            Err(e) => eprintln!("warn: failed to copy {}: {}", src.display(), e),
-        }
-    } else {
-        eprintln!(
-            "note: {} not found yet — run `blender -b --python generated/minimal_scene.py` then re-run this command",
-            src.display()
-        );
-    }
 }
 
 fn read_scene(path: &Path) -> Result<Scene> {

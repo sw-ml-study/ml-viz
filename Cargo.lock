@@ -1021,7 +1021,6 @@ dependencies = [
  "serde_yaml",
  "tera",
  "tiny_http",
- "walkdir",
 ]
 
 [[package]]

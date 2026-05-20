@@ -1,14 +1,14 @@
 # Pipeline phases
 
-## 1. Agent → scene spec
+## 1. Agent -> scene spec
 
 The planning agent converts a concept prompt into `scenes/*.yaml`. This is where labels, object positions, object types, and educational sequencing are chosen.
 
-## 2. Rust → generated assets and scripts
+## 2. Rust -> generated assets and scripts
 
-The Rust CLI validates the scene, generates NanoBanana-style SVG callouts, emits Blender Python from templates, and emits a three.js/Vite example.
+The Rust CLI (`ml-viz`) validates the scene, generates NanoBanana-style SVG callouts, and emits Blender Python from templates. There is no separate web-side generator: the interactive viewer is a single Rust/Yew/WASM crate that reads the same scene spec at runtime.
 
-## 3. Agent + Pi → Blender batch execution
+## 3. Agent + Pi -> Blender batch execution
 
 A Raspberry Pi or other batch node can run orchestration commands and dispatch Blender jobs to a GPU/CPU render host:
 
@@ -19,13 +19,17 @@ blender -b --python generated/minimal_scene.py
 Outputs:
 
 - `.blend` for continued Blender editing
-- `.glb` for web and three.js
+- `.glb` for the Yew viewer
 - rendered frames or movie files when render commands are enabled
 
-## 4. Blender out → model + Rust/Yew/three.js
+## 4. Blender out -> model + Rust/Yew viewer
 
-The `.glb` model becomes the shared scene artifact. A Rust/Yew app can wrap three.js bindings or call JavaScript interop to load the model, fly the camera, and keep SVG/canvas callouts facing the camera.
+The `.glb` model becomes the shared scene artifact. The Yew app under `yew-app/` loads it via three.js (through a thin JS glue layer), flies the camera on demand, and renders DOM callouts (tooltips, links, SVG billboards, HTML panels) positioned over the canvas via named anchors against the scene spec.
 
-## 5. Runnable web example
+## 5. Runnable demo
 
-`cargo run -- gen-three scenes/minimal.yaml --out-dir web-example` creates a Vite/three.js demo. The scaffold currently recreates the minimal scene directly; the next step is to load `generated/minimal_scene.glb` and attach callout billboards by named anchors.
+```bash
+cargo run --example ml-test-scene
+```
+
+builds the Yew crate with `wasm-pack` and serves the page on `http://0.0.0.0:9521`. The page resolves `scene.json` (the YAML spec serialized to JSON) and `minimal_scene.glb` (the Blender export) and binds each callout to its anchor object by name.
