@@ -1,8 +1,9 @@
 number = 4
 slug = "viewer-polish"
-status = "in-progress"
+status = "completed"
 description = "Goal: tighten the Yew viewer's default camera, scene layout, callout sizing, ..."
 role = "production"
 context_files = []
 created_at = "2026-05-20T15:08:22"
-commits = []
+completed_at = "2026-05-20T15:15:17"
+commits = ["f5aaa5b76959b2436080ae67dffc2a14a3650af6"]

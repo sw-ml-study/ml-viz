@@ -1,0 +1,1 @@
+Viewer polish: single-row scene layout, mountains pushed to horizon on a rectangular ground plane, narrower full-height HUD pinned to the left edge with a Home view button that resets camera + target to startup framing.
