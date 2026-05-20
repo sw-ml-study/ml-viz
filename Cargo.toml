@@ -1,0 +1,23 @@
+[package]
+name = "blender_ml_viz"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+members = ["yew-app"]
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_yaml = "0.9"
+serde_json = "1"
+tera = "1"
+walkdir = "2"
+
+[dev-dependencies]
+tiny_http = "0.12"
+
+[[example]]
+name = "ml-test-scene"
+path = "examples/ml_test_scene.rs"
