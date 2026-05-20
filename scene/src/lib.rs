@@ -200,3 +200,134 @@ impl Scene {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const MINIMAL_YAML: &str = include_str!("../../scenes/minimal.yaml");
+
+    fn meta() -> SceneMeta {
+        SceneMeta {
+            title: "t".into(),
+            environment: "e".into(),
+            frames: 1,
+        }
+    }
+
+    fn ml_cube(name: &str, label: &str) -> ObjectSpec {
+        ObjectSpec::MlCube {
+            name: name.into(),
+            label: label.into(),
+            position: [0.0, 0.0, 0.0],
+        }
+    }
+
+    fn scene(objects: Vec<ObjectSpec>) -> Scene {
+        Scene {
+            scene: meta(),
+            objects,
+            callouts: vec![],
+        }
+    }
+
+    #[test]
+    fn validate_accepts_minimal_scene() {
+        let s: Scene = serde_yaml::from_str(MINIMAL_YAML).expect("parse minimal.yaml");
+        s.validate().expect("minimal scene is valid");
+    }
+
+    #[test]
+    fn validate_rejects_empty_objects() {
+        let err = scene(vec![]).validate().unwrap_err().to_string();
+        assert!(err.contains("no objects"), "got {err}");
+    }
+
+    #[test]
+    fn validate_rejects_zero_layers() {
+        let s = scene(vec![ObjectSpec::LayerStack {
+            name: "enc".into(),
+            label: "Encoder".into(),
+            position: [0.0, 0.0, 0.0],
+            layers: 0,
+            svg: None,
+        }]);
+        let err = s.validate().unwrap_err().to_string();
+        assert!(err.contains("zero layers"), "got {err}");
+    }
+
+    #[test]
+    fn validate_rejects_single_node_graph() {
+        for n in [0u32, 1] {
+            let s = scene(vec![ObjectSpec::NetworkGraph {
+                name: "g".into(),
+                label: "Graph".into(),
+                position: [0.0, 0.0, 0.0],
+                nodes: n,
+            }]);
+            let err = s.validate().unwrap_err().to_string();
+            assert!(err.contains("at least two nodes"), "n={n}: {err}");
+        }
+    }
+
+    #[test]
+    fn validate_rejects_empty_label() {
+        let err = scene(vec![ml_cube("c", "")])
+            .validate()
+            .unwrap_err()
+            .to_string();
+        assert!(err.contains("empty label"), "got {err}");
+    }
+
+    #[test]
+    fn validate_rejects_whitespace_label() {
+        let err = scene(vec![ml_cube("c", "   \t")])
+            .validate()
+            .unwrap_err()
+            .to_string();
+        assert!(err.contains("empty label"), "got {err}");
+    }
+
+    #[test]
+    fn resolve_anchor_object_match() {
+        let objects = vec![ml_cube("decoder", "Decoder")];
+        let got = resolve_anchor(
+            &Anchor::Object {
+                object: "decoder".into(),
+            },
+            &objects,
+        );
+        assert_eq!(got, Some([0.0, 0.0, 0.0]));
+    }
+
+    #[test]
+    fn resolve_anchor_object_no_match() {
+        let objects = vec![ml_cube("decoder", "Decoder")];
+        let got = resolve_anchor(
+            &Anchor::Object {
+                object: "missing".into(),
+            },
+            &objects,
+        );
+        assert_eq!(got, None);
+    }
+
+    #[test]
+    fn resolve_anchor_world() {
+        let got = resolve_anchor(
+            &Anchor::World {
+                world: [1.0, 2.0, 3.0],
+            },
+            &[],
+        );
+        assert_eq!(got, Some([1.0, 2.0, 3.0]));
+    }
+
+    #[test]
+    fn minimal_yaml_serde_roundtrip() {
+        let first: Scene = serde_yaml::from_str(MINIMAL_YAML).expect("parse 1");
+        let yaml = serde_yaml::to_string(&first).expect("serialize");
+        let second: Scene = serde_yaml::from_str(&yaml).expect("parse 2");
+        assert_eq!(first, second);
+    }
+}
