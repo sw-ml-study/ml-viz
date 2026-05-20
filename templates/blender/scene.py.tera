@@ -53,15 +53,33 @@ bpy.ops.object.transform_apply(scale=True)
 ground.name = 'ground_plane'
 ground.data.materials.append(sand)
 
-# Stylized mountain backdrop. Pushed back to the far edge of the ground
-# plane so the cones sit on the horizon and no plane shows behind them.
-for i in range(44):
-    x=-32+i*1.5; h=random.uniform(1.0,3.4); y=21.5+random.uniform(-.4,.4)
-    bpy.ops.mesh.primitive_cone_add(vertices=3, radius1=random.uniform(.9,1.8), depth=h, location=(x,y,h/2-0.02), rotation=(0,0,random.uniform(-.2,.2)))
+# Stylized backdrop in three depth bands so the silhouette reads as
+# mountains > hills > trees from back to front. Each band uses
+# `vertices=3` for the triangular profile.
+
+# Back band: tall, dark mountains hugging the horizon at the plane's
+# far edge. Partially clipped by the plane edge — that's intentional.
+for i in range(32):
+    x=-32+i*2.0; h=random.uniform(2.6,4.0); y=22.0+random.uniform(-.3,.3)
+    bpy.ops.mesh.primitive_cone_add(vertices=3, radius1=random.uniform(1.2,2.0), depth=h, location=(x,y,h/2-0.02), rotation=(0,0,random.uniform(-.2,.2)))
     obj=bpy.context.object; obj.name='distant_mountain'
-    # Map height range (1.0-3.4) to palette index; jitter so the line isn't a stripe.
-    tier = min(len(browns)-1, max(0, int((h - 1.0) / (3.4 - 1.0) * len(browns) + random.uniform(-0.6, 0.6))))
-    obj.data.materials.append(browns[tier])
+    obj.data.materials.append(browns[0])
+
+# Middle band: clay-brown hills, a shade between the dark mountains
+# and the sand-colored ground plane.
+for i in range(34):
+    x=-32+i*1.9; h=random.uniform(1.3,2.3); y=18.0+random.uniform(-.3,.3)
+    bpy.ops.mesh.primitive_cone_add(vertices=3, radius1=random.uniform(0.7,1.3), depth=h, location=(x,y,h/2-0.02), rotation=(0,0,random.uniform(-.2,.2)))
+    obj=bpy.context.object; obj.name='mid_hill'
+    obj.data.materials.append(browns[2])
+
+# Front band: small green "trees" — the foreground vegetation that
+# overlaps in front of the hills and mountains.
+for i in range(48):
+    x=-32+i*1.35; h=random.uniform(0.5,1.1); y=14.0+random.uniform(-.4,.4)
+    bpy.ops.mesh.primitive_cone_add(vertices=3, radius1=random.uniform(0.25,0.5), depth=h, location=(x,y,h/2-0.02), rotation=(0,0,random.uniform(-.2,.2)))
+    obj=bpy.context.object; obj.name='tree'
+    obj.data.materials.append(green)
 
 # Helpers
 def cube(name, loc, scale, material):
